@@ -1,10 +1,10 @@
 <template>
-    <div id="show-blogs" v-theme="'wide'">
+    <div id="show-blogs">
         <h1> All Blog Articles </h1>
         <input type="text" v-model="search" placeholder="Search blogs" class="search-blog">
         <div v-for="blog in filteredBlogs" :key="blog.id" class="single-blog">
-            <h2 v-rainbow >{{blog.title | to-uppercase}}</h2>
-            <article>{{blog.body | snippet}}</article>
+            <router-link class="hyper" v-bind:to="'/blog/'+blog.id"><h2 >{{blog.title | to-uppercase}}</h2></router-link>
+            <article>{{blog.content | snippet}}</article>
         </div>
     </div>
 </template>
@@ -15,6 +15,10 @@
     max-width:800px;
     margin:0 auto;
     
+}
+
+.hyper{
+    text-decoration: none;
 }
 
 .single-blog{
@@ -44,11 +48,22 @@ export default {
 
     },
     created(){
-        this.$http.get('https://jsonplaceholder.typicode.com/posts')
-        .then(data=>{
-            this.blogs = data.data.slice(0,10)
-            console.log(this.blogs[0])
+        this.$http.get('https://vuepractice-f4374.firebaseio.com/posts.json')
+        .then((data)=>{
+            return data.data
         })
+        .then((data)=>{
+            var blogsArray = []
+        for (let key in data)
+        {
+               
+               data[key].id=key
+               blogsArray.push(data[key])
+        }
+        // console.log(blogsArray)
+        this.blogs = blogsArray
+        })
+       
     },
     computed: {
         
